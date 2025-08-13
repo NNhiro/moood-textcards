@@ -1,4 +1,6 @@
-// Text-only cards: no photo field, minimal cost
+// Text-only cards: Places API (New) live search with minimal cost
+// - Fix: locationBias.circle.center must be { latitude, longitude } (not lat/lng)
+// - Photos are not requested (no photo charges). Details are fetched only on click.
 (() => {
   const MAX_RESULTS = 6; // 表示件数
   const SAMPLE_PATH = "data/places.sample.json";
@@ -55,6 +57,7 @@
       <div class="details hidden"></div>
     `;
 
+    // 詳細はクリック時だけ（節約）
     const detailsBtn = el.querySelector("[data-action='details']");
     const detailsEl = el.querySelector(".details");
     detailsBtn.addEventListener("click", async () => {
@@ -102,13 +105,27 @@
   async function searchWithApi(){
     const key = (typeof GOOGLE_API_KEY !== "undefined") ? GOOGLE_API_KEY : "";
     if(!key) throw new Error("NO_KEY");
+
+    // centerは { latitude, longitude } 形式にする
+    const loc = DEFAULT_QUERY.location || {};
+    const center = (typeof loc.latitude === "number" && typeof loc.longitude === "number")
+      ? { latitude: loc.latitude, longitude: loc.longitude }
+      : (typeof loc.lat === "number" && typeof loc.lng === "number")
+        ? { latitude: loc.lat, longitude: loc.lng }
+        : undefined;
+
     const body = {
       textQuery: DEFAULT_QUERY.keyword || "レストラン",
-      locationBias: { circle: { center: DEFAULT_QUERY.location, radius: DEFAULT_QUERY.radius } },
+      locationBias: center ? { circle: { center, radius: DEFAULT_QUERY.radius || 1500 } } : undefined,
       maxResultCount: 12,
-      languageCode: "ja"
+      languageCode: "ja",
+      regionCode: "JP"
     };
-    const FIELDS = "places.name,places.displayName,places.rating,places.userRatingCount,places.priceLevel,places.formattedAddress,places.googleMapsUri";
+
+    // 写真フィールドは要求しない（写真課金ゼロ）
+    const FIELDS =
+      "places.name,places.displayName,places.rating,places.userRatingCount,places.priceLevel,places.formattedAddress,places.googleMapsUri";
+
     const res = await fetch("https://places.googleapis.com/v1/places:searchText", {
       method: "POST",
       headers: {
@@ -146,6 +163,7 @@
         list = await searchWithApi();
         setBadge("Google Places API（ライブ）");
       }catch(e){
+        console.warn("Live search failed, fallback to sample:", e);
         setBadge(SAMPLE_PATH);
         list = await loadSample();
       }
