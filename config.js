@@ -1,5 +1,5 @@
 // Put your Google Places API key here (optional).
-const GOOGLE_API_KEY = ""; // ← ここにキー（未設定ならサンプルで動作）
+const GOOGLE_API_KEY = "AIzaSyCmfJuGWh547uTCQelDizJ5ipYK2PopkfY"; // ← ここにキー（未設定ならサンプルで動作）
 
 // Default query used when key is present
 const DEFAULT_QUERY = {
