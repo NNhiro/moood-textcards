@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="140" height="36" viewBox="0 0 140 36">
-  <defs><linearGradient id="g" x1="0" x2="1"><stop offset="0%" stop-color="#ff6a3d"/><stop offset="100%" stop-color="#ff9a3d"/></linearGradient></defs>
-  <rect rx="8" width="140" height="36" fill="white"/>
-  <text x="12" y="24" font-size="20" font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-weight="700" fill="url(#g)">MOOOD</text>
-</svg>
